@@ -1,0 +1,65 @@
+# PBD Project
+
+
+import io
+import nltk
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+
+
+#reading a file
+data = open('para.txt', encoding='utf8').read()
+print("Data From File is: \n")
+print(data)
+print("\n\n")
+
+
+#storing stop words
+stop_words = set(stopwords.words('english'))
+filtered_data = []
+
+#splitting words
+words = data.split()
+
+#removing stop words
+for r in words: 
+    if not r in stop_words:
+        filtered_data.append(r)
+
+
+#initializing symbols
+symbols = "{}()[].,:;+-*/&|<>=~$1234567890"
+result = []
+for r in filtered_data:
+    temp = ""
+    for c in r:
+        if c not in symbols:
+            temp+=c
+    result.append(temp)    
+            
+#printing filtered data
+s = " "
+print("Data after removing stop Words and symbols: \n")
+
+# joining the words and printing as a data
+print(s.join(result))
+print("\n\n")
+
+#now we will apply k-mean clustering to the paragraph
+
+#installing kmeans library
+# sudo pacman -S python-scikit-learn
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import KMeans
+vectorizer = CountVectorizer()
+#vectorizing the data
+X = vectorizer.fit_transform(result)
+
+#applying kmean
+kmeans = KMeans(n_clusters=2,init='k-means++', max_iter=600, n_init=10)
+#identifying clusters
+kmeans.fit(X)
+
+#predicted kmeans
+identified_clusters = kmeans.fit_predict(X)
+identified_clusters
